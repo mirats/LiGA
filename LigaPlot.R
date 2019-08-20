@@ -229,5 +229,3 @@ ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in",
        filename = paste0(campaignName, "-scatter2.eps", sep=""))
 ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter2.jpg", sep=""))
-###Combining all the plots----------------------------------------------------------------------------------------------
-
