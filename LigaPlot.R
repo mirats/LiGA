@@ -19,9 +19,6 @@ dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is sto
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
 x_axis<-noquote("Mod") ##NOT WORKING. #Define the X-axis. Options: Mod, Glytoucan, IUPAC.
-
-
-
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
