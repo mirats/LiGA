@@ -13,12 +13,12 @@ library(RColorBrewer)
 library(scales)
 library(cowplot)
 
-campaignName<- "" #Do not put extention. File should be saves in .xlsx format ONLY.
+campaignName<- "DCSIGNcells_vs_YZ" #Do not put extention. File should be saves in .xlsx format ONLY.
 dirFiles <- "~/OneDrive - ualberta.ca/DerdaLab/LiGA/LiGA/" #Folder where all the .txt liga files are stored. No need to put name of files
 dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is stored with information about experiment. Look at Dropbox/Database/Campaign/CD22_vs_YZ.xlsx for examples. 
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
-x_axis<-noquote("Mod") ##NOT WORKING. #Define the X-axis. Options: Mod, Glytoucan, IUPAC.
+x_axis<- 3 ##NOT WORKING. #Define the X-axis. Options: Mod, Glytoucan, IUPAC.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -125,6 +125,16 @@ longdataT$Glytoucan<-ligaFile$`GlyTouCan ID`[match(longdataT$Mod,
 longdataT$Glytoucan<-paste0(longdataT$Glytoucan,"-[", longdataT$GlycanNum, "]")
 longdataT$Mod2<-paste0(longdataT$Mod,"-[", longdataT$GlycanNum, "]")
 longdataT[is.na(longdataT)] <- 0
+
+if (x_axis==1) {
+  longdataT$x_label<-longdataT$Mod2
+} else if (x_axis==2) {
+  longdataT$x_label<-longdataT$Glytoucan
+} else {
+  longdataT$x_label<-longdataT$IUPAC
+}
+
+
 ### Load the plotting parameters------------------------------------------------------------------------------------------
 jitter <- position_jitter(width = 0.2, height = 0.2)
 
@@ -143,7 +153,7 @@ fillScale <- scale_fill_manual(name =factor(longdataT$Sample),values = ShapeFill
 ### Generate Scatterplot1 Map------------------------------------------------------------------------------------------
 scatter1<-ggplot(longdataT)+ 
   theme_bw()+
-  geom_point(position = jitter, aes(x=reorder(Mod2, +Order), y=Freq, color = Sample, shape=Sample,  fill = factor(Sample)), 
+  geom_point(position = jitter, aes(x=reorder(x_label, +Order), y=Freq, color = Sample, shape=Sample,  fill = factor(Sample)), 
              stroke=0.7, size=3)+
   scale_y_log10(limits=c(1, 1e6), labels = trans_format("log10", math_format(10^.x)))+
   colScale+
@@ -164,7 +174,7 @@ ggsave(plot = scatter1, width = 25, height = 6.25, dpi = 300, units="in",
        filename = paste0(campaignName, "-scatter1.jpg", sep=""))
 ### Generate Heat Map------------------------------------------------------------------------------------------
 jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
-hm<-ggplot(longdataT, aes(x=reorder(Mod2, +Order), y=fct_rev(factor(Sample)))) + 
+hm<-ggplot(longdataT, aes(x=reorder(x_label, +Order), y=fct_rev(factor(Sample)))) + 
   theme_light()+
   geom_tile(aes(fill = log10(Freq)), colour = "black", size=0.3) + 
   scale_fill_gradientn(colours = jet.colors(7))+
@@ -195,6 +205,13 @@ dataEN$Order<- longdataT$Order[match(dataEN$Mod,
                                      longdataT$Mod)]
 dataEN$Mod2<- longdataT$Mod2[match(dataEN$Mod, 
                                    longdataT$Mod)]
+if (x_axis==1) {
+  dataEN$x_label<-dataEN$Mod2
+} else if (x_axis==2) {
+  dataEN$x_label<-dataEN$Glytoucan
+} else {
+  dataEN$x_label<-dataEN$IUPAC
+}
 ###Plotting parameters for scatter 2------------------------------------------------------------------------------------------
 scatter2<-ggplot(data=dataEN)+ 
   theme_bw()+
