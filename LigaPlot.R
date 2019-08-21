@@ -13,12 +13,12 @@ library(RColorBrewer)
 library(scales)
 library(cowplot)
 
-campaignName<- "DCSIGNcells_vs_YZ" #Do not put extention. File should be saves in .xlsx format ONLY.
-dirFiles <- "~/OneDrive - ualberta.ca/DerdaLab/LiGA/LiGA/" #Folder where all the .txt liga files are stored. No need to put name of files
+campaignName<- "mAB-Gal4_vs_YU" #Do not put extention. File should be saves in .xlsx format ONLY.
+dirFiles <- "~/Google Drive/Derda Lab/Glycan Array/AllSeqFiles/" #Folder where all the .txt liga files are stored. No need to put name of files
 dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is stored with information about experiment. Look at Dropbox/Database/Campaign/CD22_vs_YZ.xlsx for examples. 
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
-x_axis<- 3 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
+x_axis<- 1 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -27,7 +27,7 @@ fileC<-read_excel(paste0(dirCampaign, campaignName, ".xlsx", sep=""))  #reads th
 #load the test data--------------------------------------------------------------------------------------------
 testFiles<-fileC$Test
 testFiles<-testFiles[!is.na(testFiles)]
-test<-lapply(paste0(dirFiles, testFiles, ".txt", sep=""), function(x) 
+test<-lapply(paste0(dirFiles, testFiles, "-ppm.txt", sep=""), function(x) 
   read.table(x, header = TRUE, stringsAsFactors = FALSE,fill = TRUE))
 test2<-lapply(test, function(x) x[!(names(x) %in% c("index", "mindex", "Primer","Nuc", "AA"))]) #drops the uncessary
 for(i in 1:length(test2)){
@@ -42,7 +42,7 @@ colnames(test2) <- c("Mod", rep(paste0("test", 1:(NCOL(test2)-1))))
 #Load the control data in the environment--------------------------------------------------------------------------------------
 controlFiles<-fileC$Control
 controlFiles<-controlFiles[!is.na(controlFiles)]
-control<-lapply(paste0(dirFiles, fileC$Control, ".txt", sep=""), function(x) 
+control<-lapply(paste0(dirFiles, controlFiles, "-ppm.txt", sep=""), function(x) 
   read.table(x, header = TRUE, stringsAsFactors = FALSE,fill = TRUE))   #reads the Campaign file
 control2<-lapply(control, function(x) x[!(names(x) %in% c("index", "mindex", "Primer","Nuc", "AA"))]) #drops the uncessary stuff
 for(i in 1:length(control2)){
@@ -57,7 +57,7 @@ colnames(control2) <- c("Mod", rep(paste0("control", 1:(NCOL(control2)-1))))
 #load the naive data in the environment--------------------------------------------------------------------------------------
 naiveFiles<-fileC$Naïve
 naiveFiles<-naiveFiles[!is.na(naiveFiles)]
-naive<- lapply(paste0(dirFiles, naiveFiles, ".txt", sep=""), function(x)
+naive<- lapply(paste0(dirFiles, naiveFiles, "-ppm.txt", sep=""), function(x)
   read.table(x, header=T, stringsAsFactors = FALSE,fill = TRUE))
 naive2<- lapply(naive, function(x) x[!(names(x) %in% c("index", "mindex", "Primer","Nuc", "AA"))])
 for(i in 1:length(naive2)){
