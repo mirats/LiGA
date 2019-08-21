@@ -18,7 +18,7 @@ dirFiles <- "~/OneDrive - ualberta.ca/DerdaLab/LiGA/LiGA/" #Folder where all the
 dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is stored with information about experiment. Look at Dropbox/Database/Campaign/CD22_vs_YZ.xlsx for examples. 
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
-x_axis<- 3 ##NOT WORKING. #Define the X-axis. Options: Mod, Glytoucan, IUPAC.
+x_axis<- 3 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -199,11 +199,13 @@ totalEN<-testEN/controlEN
 dataEN<- data.frame(glycan=mergedDataNorm[1],testEN,controlEN, totalEN)
 is.na(dataEN) <- sapply(dataEN, is.infinite)
 dataEN[is.na(dataEN)] <- 0
-dataEN$GlycanID<- longdataT$GlycanID[match(dataEN$Mod, 
+dataEN$Glytoucan<- longdataT$Glytoucan[match(dataEN$Mod, 
                                            longdataT$Mod)]
 dataEN$Order<- longdataT$Order[match(dataEN$Mod, 
                                      longdataT$Mod)]
 dataEN$Mod2<- longdataT$Mod2[match(dataEN$Mod, 
+                                   longdataT$Mod)]
+dataEN$IUPAC<- longdataT$IUPAC[match(dataEN$Mod, 
                                    longdataT$Mod)]
 if (x_axis==1) {
   dataEN$x_label<-dataEN$Mod2
@@ -215,16 +217,16 @@ if (x_axis==1) {
 ###Plotting parameters for scatter 2------------------------------------------------------------------------------------------
 scatter2<-ggplot(data=dataEN)+ 
   theme_bw()+
-  geom_point(aes(x=reorder(Mod2, +Order),
+  geom_point(aes(x=reorder(x_label, +Order),
                  y=testEN),
              stat='identity', size=6, fill="black", 
              color="black", shape=23)+
-  geom_point(aes(x=reorder(Mod2, +Order),
+  geom_point(aes(x=reorder(x_label, +Order),
                  y=controlEN),
              stat='identity', size=6, 
              color="black", fill="white", shape=23)+
-  geom_segment(aes(x=reorder(Mod2, +Order), 
-                   xend=Mod2, 
+  geom_segment(aes(x=reorder(x_label, +Order), 
+                   xend=x_label, 
                    y=testEN,
                    yend=controlEN, size=totalEN))+
   scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
