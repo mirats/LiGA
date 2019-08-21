@@ -13,7 +13,7 @@ library(RColorBrewer)
 library(scales)
 library(cowplot)
 
-campaignName<- "mAB-Gal4_vs_YU" #Do not put extention. File should be saves in .xlsx format ONLY.
+campaignName<- "DCSIGNcells_vs_YZ" #Do not put extention. File should be saves in .xlsx format ONLY.
 dirFiles <- "~/Google Drive/Derda Lab/Glycan Array/AllSeqFiles/" #Folder where all the .txt liga files are stored. No need to put name of files
 dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is stored with information about experiment. Look at Dropbox/Database/Campaign/CD22_vs_YZ.xlsx for examples. 
 dirSave<- dirCampaign #Folder where all the images will be saved. 
