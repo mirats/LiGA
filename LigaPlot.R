@@ -13,12 +13,14 @@ library(RColorBrewer)
 library(scales)
 library(cowplot)
 
-campaignName<- "DCSIGNcells_vs_YZ" #Do not put extention. File should be saves in .xlsx format ONLY.
+campaignName<- "cd22cells_vs_YZ" #Do not put extention. File should be saves in .xlsx format ONLY.
 dirFiles <- "~/Google Drive/Derda Lab/Glycan Array/AllSeqFiles/" #Folder where all the .txt liga files are stored. No need to put name of files
 dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is stored with information about experiment. Look at Dropbox/Database/Campaign/CD22_vs_YZ.xlsx for examples. 
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
-x_axis<- 1 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
+dirOrder<- "~/Dropbox/Database/" #Place where order of x-axis plotting file is stored. Default is Dropbox/Database/
+fileOrder<-"Glycan Plot Order"
+x_axis<- 2 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -105,7 +107,7 @@ longdataT<- mergedDataNorm %>%
   gather(Sample, Freq, colnames(mergedDataNorm[2:ncol(mergedDataNorm)]))
 jitter <- position_jitter(width = 0.2, height = 0.2)
 ### Load the order of the plotting------------------------------------------------------------------------------------------
-liga<-read_excel(paste0(dirMaldi, substr(fileC$Test[1], 12, 13), ".xlsx", sep=""), col_names=T, skip=1)
+liga<-read_excel(paste0(dirOrder, fileOrder, ".xlsx", sep=""), col_names=T, skip=0)
 longdataT$Order <- liga$Order[match(longdataT$Mod, 
                                     liga$Alphanum.)]
 
@@ -246,3 +248,4 @@ ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in",
 ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter2.jpg", sep=""))
 #Beyond this point is experimentation
+
