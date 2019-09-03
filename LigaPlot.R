@@ -20,7 +20,7 @@ dirSave<- dirCampaign #Folder where all the images will be saved.
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
 dirOrder<- "~/Dropbox/Database/" #Place where order of x-axis plotting file is stored. Default is Dropbox/Database/
 fileOrder<-"Glycan Plot Order"
-x_axis<- 2 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
+x_axis<- 1 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -99,9 +99,12 @@ rownames(c) <- NULL
 mergedDataNorm<-c[c("Mod", setdiff(names(c), "Mod"))]
 #End of TMM analysis. --------------------------------------------------------------------------------------------------
 mergedDataNorm<-mergedDataNorm[!mergedDataNorm$Mod == "???", ]
-testAvg<- apply(mergedDataNorm[,2:NCOL(test2)], 1, mean)
-controlAvg<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+1):(tail(2:NCOL(test2), n=1)+NCOL(control2)-1)], 1, mean)
-naiveAvg<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+NCOL(control2)):(NCOL(mergedDataNorm))], 1, mean)
+testAvg<- apply(mergedDataNorm[,2:NCOL(test2)], 1, mean) #Mean
+testStd<- apply(mergedDataNorm[,2:NCOL(test2)], 1, sd) #Standard Deviation
+controlAvg<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+1):(tail(2:NCOL(test2), n=1)+NCOL(control2)-1)], 1, mean) #Mean
+controlStd<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+1):(tail(2:NCOL(test2), n=1)+NCOL(control2)-1)], 1, sd) #Standard Deviation
+naiveAvg<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+NCOL(control2)):(NCOL(mergedDataNorm))], 1, mean) #Mean
+naiveStd<- apply(mergedDataNorm[,(tail(2:NCOL(test2), n=1)+NCOL(control2)):(NCOL(mergedDataNorm))], 1, sd) #Standard Deviation
 dataT<- data.frame(glycan=mergedDataNorm[1],testAvg,controlAvg, naiveAvg)
 longdataT<- mergedDataNorm %>%
   gather(Sample, Freq, colnames(mergedDataNorm[2:ncol(mergedDataNorm)]))
@@ -163,16 +166,15 @@ scatter1<-ggplot(longdataT)+
   fillScale+
   labs(y="PPM", x="Glycan")+
   ggtitle(campaignName)+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=7,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=7, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=7),
-        legend.text=element_text(family="Arial", color="black", size=7),
-        title=element_text(family="Arial", color="black", size=12))+
-  coord_equal(ratio =2)
+  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Arial", color="black",size=12),
+        legend.text=element_text(family="Arial", color="black", size=12),
+        title=element_text(family="Arial", color="black", size=12))
 scatter1
-ggsave(plot = scatter1, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in",
        filename = paste0(campaignName, "-scatter1.eps", sep=""))
-ggsave(plot = scatter1, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter1.jpg", sep=""))
 ### Generate Heat Map------------------------------------------------------------------------------------------
 jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
@@ -182,21 +184,22 @@ hm<-ggplot(longdataT, aes(x=reorder(x_label, +Order), y=fct_rev(factor(Sample)))
   scale_fill_gradientn(colours = jet.colors(7))+
   ggtitle(campaignName)+
   labs(y="PPM", x="Glycan")+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=7,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=7),
-        legend.title=element_text(family="Arial", color="black",size=7),
-        legend.text=element_text(family="Arial", color="black", size=7),
+  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Arial", color="black",size=12),
+        legend.text=element_text(family="Arial", color="black", size=12),
         title=element_text(family="Arial", color="black", size=12))+
   coord_equal()
 hm
-ggsave(plot = hm, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = hm, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-hm.eps", sep=""))
-ggsave(plot = hm, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = hm, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-hm.jpg", sep=""))
 ### Generate Enrichment Data-------------------------------------------------------------------------------------
 testEN <- testAvg/naiveAvg
 controlEN <- controlAvg/naiveAvg
 totalEN<-testEN/controlEN
+totalStd<-totalEN*sqrt(((testStd/testAvg)^2)+(((controlStd/controlAvg)^2)))
 
 dataEN<- data.frame(glycan=mergedDataNorm[1],testEN,controlEN, totalEN)
 is.na(dataEN) <- sapply(dataEN, is.infinite)
@@ -231,20 +234,59 @@ scatter2<-ggplot(data=dataEN)+
                    xend=x_label, 
                    y=testEN,
                    yend=controlEN, size=totalEN))+
-  scale_y_log10(labels = trans_format("log10", math_format(10^.x)))+
+  scale_y_log10(labels = trans_format("log10", function(x) 10^x))+
   scale_size_continuous(range = c(0.1, 1.5))+
   labs(y="Enrichment", x="Glycan")+
   ggtitle(campaignName)+
   scale_fill_manual(values=c("#97CAD8","#DC1452"))+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=7,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=7, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=7),
-        legend.text=element_text(family="Arial", color="black", size=7),
-        title=element_text(family="Arial", color="black", size=12))+
-  coord_equal(ratio = 4)
+  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Arial", color="black",size=12),
+        legend.text=element_text(family="Arial", color="black", size=12),
+        title=element_text(family="Arial", color="black", size=12))
 scatter2
-ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = scatter2, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter2.eps", sep=""))
-ggsave(plot = scatter2, width = 25, height = 6.25, dpi = 300, units="in", 
+ggsave(plot = scatter2, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter2.jpg", sep=""))
 
+
+#This is experimental 
+dataTotal<- data.frame(glycan=mergedDataNorm[1], totalEN, totalStd)
+is.na(dataTotal) <- sapply(dataTotal, is.infinite)
+dataTotal[is.na(dataTotal)] <- 0
+dataTotal$Glytoucan<- longdataT$Glytoucan[match(dataTotal$Mod, 
+                                             longdataT$Mod)]
+dataTotal$Order<- longdataT$Order[match(dataTotal$Mod, 
+                                     longdataT$Mod)]
+dataTotal$Mod2<- longdataT$Mod2[match(dataTotal$Mod, 
+                                   longdataT$Mod)]
+dataTotal$IUPAC<- longdataT$IUPAC[match(dataTotal$Mod, 
+                                     longdataT$Mod)]
+if (x_axis==1) {
+  dataTotal$x_label<-dataTotal$Mod2
+} else if (x_axis==2) {
+  dataTotal$x_label<-dataTotal$Glytoucan
+} else {
+  dataTotal$x_label<-dataTotal$IUPAC
+}
+
+barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
+  theme_bw()+
+  geom_bar(stat="identity", color="black", fill="black", 
+           position=position_dodge()) +
+  geom_errorbar(aes(ymin=totalEN-totalStd, ymax=totalEN+totalStd), width=.2,
+                position=position_dodge(.9))+
+  labs(y="Enrichment", x="Glycan")+
+  ggtitle(campaignName)+
+  expand_limits(x = 0, y = 0)+
+  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Arial", color="black",size=12),
+        legend.text=element_text(family="Arial", color="black", size=12),
+        title=element_text(family="Arial", color="black", size=12))
+barchart
+ggsave(plot = barchart, width = 17.71, height = 5.2, dpi = 300, units="in", 
+       filename = paste0(campaignName, "-barchart.eps", sep=""))
+ggsave(plot = barchart, width = 17.71, height = 5.2, dpi = 300, units="in", 
+       filename = paste0(campaignName, "-barchart.jpg", sep=""))
