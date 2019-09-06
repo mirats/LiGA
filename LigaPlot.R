@@ -21,6 +21,7 @@ dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is D
 dirOrder<- "~/Dropbox/Database/" #Place where order of x-axis plotting file is stored. Default is Dropbox/Database/
 fileOrder<-"Glycan Plot Order"
 x_axis<- 1 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
+TypeOfLibrary<-"YZ" #Options: 3x3 and YZ.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
 setwd(dirSave)
@@ -110,10 +111,6 @@ longdataT<- mergedDataNorm %>%
   gather(Sample, Freq, colnames(mergedDataNorm[2:ncol(mergedDataNorm)]))
 jitter <- position_jitter(width = 0.2, height = 0.2)
 ### Load the order of the plotting------------------------------------------------------------------------------------------
-liga<-read_excel(paste0(dirOrder, fileOrder, ".xlsx", sep=""), col_names=T, skip=0)
-longdataT$Order <- liga$Order[match(longdataT$Mod, 
-                                    liga$Alphanum.)]
-
 ligaFile<-read_excel(paste0(dirMaldi, "MALDI-names.xlsx"), col_names=T, skip=0)
 ligaFile = ligaFile[-1,]
 head(ligaFile)
@@ -121,9 +118,12 @@ longdataT$IUPAC<- ligaFile$IUPAC[match(longdataT$Mod,
                                        ligaFile$`Glycan Name`)]
 longdataT$linker<- ligaFile$Linkage[match(longdataT$Mod, 
                                           ligaFile$`Glycan Name`)]
-longdataT$Density<- ligaFile$Density[match(longdataT$Mod, 
-                                           ligaFile$`Glycan Name`)]
-longdataT$GlycanNum<-(longdataT$Density)*27
+axisfile<-read_excel(paste0(dirMaldi,TypeOfLibrary,"-axis.xlsx"), col_names = T, skip=0)
+longdataT$Order<- axisfile$Order[match(longdataT$Mod, 
+                                           axisfile$Alphanum.)]
+longdataT$Density<- axisfile$Density[match(longdataT$Mod, 
+                                           axisfile$Alphanum.)]
+longdataT$GlycanNum<-axisfile$`Number Glycan`[match(longdataT$Mod,axisfile$Alphanum.)]
 longdataT$IUPAC<-paste0(longdataT$IUPAC, longdataT$linker, "-[", longdataT$GlycanNum, "]")
 longdataT$Glytoucan<-ligaFile$`GlyTouCan ID`[match(longdataT$Mod, 
                                                    ligaFile$`Glycan Name`)]
@@ -272,10 +272,10 @@ if (x_axis==1) {
 }
 
 barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
-  theme_bw()+
+  theme_classic()+
   geom_bar(stat="identity", color="black", fill="black", 
            position=position_dodge()) +
-  geom_errorbar(aes(ymin=totalEN-totalStd, ymax=totalEN+totalStd), width=.2,
+  geom_errorbar(aes(ymin=totalEN, ymax=totalEN+totalStd), width=.2,
                 position=position_dodge(.9))+
   labs(y="Enrichment", x="Glycan")+
   ggtitle(campaignName)+
@@ -284,7 +284,13 @@ barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
         axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
         legend.title=element_text(family="Arial", color="black",size=12),
         legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))
+        title=element_text(family="Arial", color="black", size=12))+
+  theme( # remove the vertical grid lines
+    panel.grid.major.x = element_blank() ,
+    # explicitly set the horizontal lines (or they will disappear too)
+    panel.grid.major.y = element_line( size=.1, color="black" ),
+    panel.grid.minor.y = element_blank()
+  )
 barchart
 ggsave(plot = barchart, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-barchart.eps", sep=""))
