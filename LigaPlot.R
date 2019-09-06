@@ -272,10 +272,10 @@ if (x_axis==1) {
 }
 
 barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
-  theme_bw()+
+  theme_classic()+
   geom_bar(stat="identity", color="black", fill="black", 
            position=position_dodge()) +
-  geom_errorbar(aes(ymin=totalEN-totalStd, ymax=totalEN+totalStd), width=.2,
+  geom_errorbar(aes(ymin=totalEN, ymax=totalEN+totalStd), width=.2,
                 position=position_dodge(.9))+
   labs(y="Enrichment", x="Glycan")+
   ggtitle(campaignName)+
@@ -284,7 +284,13 @@ barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
         axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
         legend.title=element_text(family="Arial", color="black",size=12),
         legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))
+        title=element_text(family="Arial", color="black", size=12))+
+  theme( # remove the vertical grid lines
+    panel.grid.major.x = element_blank() ,
+    # explicitly set the horizontal lines (or they will disappear too)
+    panel.grid.major.y = element_line( size=.1, color="black" ),
+    panel.grid.minor.y = element_blank()
+  )
 barchart
 ggsave(plot = barchart, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-barchart.eps", sep=""))
