@@ -20,7 +20,7 @@ dirSave<- dirCampaign #Folder where all the images will be saved.
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
 dirOrder<- "~/Dropbox/Database/" #Place where order of x-axis plotting file is stored. Default is Dropbox/Database/
 fileOrder<-"Glycan Plot Order"
-x_axis<- 1 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC.
+x_axis<- 4 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC, 4=CommonName
 TypeOfLibrary<-"YZ" #Options: 3x3 and YZ.
 #-------------------------------------------####################-----------------------------------------------------------------
 ###Do not change anything beyond this point--------------------------------------------------------------------------------------
@@ -118,6 +118,8 @@ longdataT$IUPAC<- ligaFile$IUPAC[match(longdataT$Mod,
                                        ligaFile$`Glycan Name`)]
 longdataT$linker<- ligaFile$Linkage[match(longdataT$Mod, 
                                           ligaFile$`Glycan Name`)]
+longdataT$CommonName<-ligaFile$`Common Name`[match(longdataT$Mod, 
+                                                   ligaFile$`Glycan Name`)]
 axisfile<-read_excel(paste0(dirMaldi,TypeOfLibrary,"-axis.xlsx"), col_names = T, skip=0)
 longdataT$Order<- axisfile$Order[match(longdataT$Mod, 
                                            axisfile$Alphanum.)]
@@ -129,14 +131,17 @@ longdataT$Glytoucan<-ligaFile$`GlyTouCan ID`[match(longdataT$Mod,
                                                    ligaFile$`Glycan Name`)]
 longdataT$Glytoucan<-paste0(longdataT$Glytoucan,"-[", longdataT$GlycanNum, "]")
 longdataT$Mod2<-paste0(longdataT$Mod,"-[", longdataT$GlycanNum, "]")
+longdataT$CommonName2<-paste0(longdataT$CommonName,"-[", longdataT$GlycanNum, "]")
 longdataT[is.na(longdataT)] <- 0
 
 if (x_axis==1) {
   longdataT$x_label<-longdataT$Mod2
 } else if (x_axis==2) {
   longdataT$x_label<-longdataT$Glytoucan
-} else {
+} else if (x_axis==3){
   longdataT$x_label<-longdataT$IUPAC
+} else {
+  longdataT$x_label<-longdataT$CommonName2
 }
 
 
@@ -166,11 +171,11 @@ scatter1<-ggplot(longdataT)+
   fillScale+
   labs(y="PPM", x="Glycan")+
   ggtitle(campaignName)+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=12),
-        legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))
+  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=7,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Arial", color="black",size=7, face="bold"),
+        legend.title=element_text(family="Arial", color="black",size=7),
+        legend.text=element_text(family="Arial", color="black", size=7),
+        title=element_text(family="Arial", color="black", size=7))
 scatter1
 ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in",
        filename = paste0(campaignName, "-scatter1.eps", sep=""))
@@ -212,12 +217,16 @@ dataEN$Mod2<- longdataT$Mod2[match(dataEN$Mod,
                                    longdataT$Mod)]
 dataEN$IUPAC<- longdataT$IUPAC[match(dataEN$Mod, 
                                    longdataT$Mod)]
+dataEN$CommonName2<- longdataT$CommonName2[match(dataEN$Mod, 
+                                     longdataT$Mod)]
 if (x_axis==1) {
   dataEN$x_label<-dataEN$Mod2
 } else if (x_axis==2) {
   dataEN$x_label<-dataEN$Glytoucan
-} else {
+} else if (x_axis==3){
   dataEN$x_label<-dataEN$IUPAC
+} else {
+  dataEN$x_label<-dataEN$CommonName2
 }
 ###Plotting parameters for scatter 2------------------------------------------------------------------------------------------
 scatter2<-ggplot(data=dataEN)+ 
@@ -263,12 +272,16 @@ dataTotal$Mod2<- longdataT$Mod2[match(dataTotal$Mod,
                                    longdataT$Mod)]
 dataTotal$IUPAC<- longdataT$IUPAC[match(dataTotal$Mod, 
                                      longdataT$Mod)]
+dataTotal$CommonName2<- longdataT$CommonName2[match(dataTotal$Mod, 
+                                        longdataT$Mod)]
 if (x_axis==1) {
   dataTotal$x_label<-dataTotal$Mod2
 } else if (x_axis==2) {
   dataTotal$x_label<-dataTotal$Glytoucan
-} else {
+} else if (x_axis==3){
   dataTotal$x_label<-dataTotal$IUPAC
+} else {
+  dataTotal$x_label<-dataTotal$CommonName2
 }
 
 barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
