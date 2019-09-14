@@ -19,7 +19,6 @@ dirCampaign <- "~/Dropbox/Database/Campaign/" #Folder where the xlsx file is sto
 dirSave<- dirCampaign #Folder where all the images will be saved. 
 dirMaldi<- "~/Dropbox/Database/" #Place where MALDI file is stored. Default is Dropbox/Database/
 dirOrder<- "~/Dropbox/Database/" #Place where order of x-axis plotting file is stored. Default is Dropbox/Database/
-fileOrder<-"Glycan Plot Order"
 x_axis<- 4 ## Options: 1=Mod, 2=Glytoucan, 3=IUPAC, 4=CommonName
 TypeOfLibrary<-"YZ" #Options: 3x3 and YZ.
 #-------------------------------------------####################-----------------------------------------------------------------
@@ -146,41 +145,41 @@ if (x_axis==1) {
 
 
 ### Load the plotting parameters------------------------------------------------------------------------------------------
-jitter <- position_jitter(width = 0.2, height = 0.2)
-
-ColorP<-c(rep("black", NCOL(control2)-1), rep("#999999", NCOL(naive2)-1), rep("black", NCOL(test2)-1))
-names(ColorP) <- levels(factor(longdataT$Sample))
-colScale <- scale_colour_manual(name =factor(longdataT$Sample),values = ColorP)
-
-ShapeP<- c(rep(25, NCOL(control2)-1), rep(21, NCOL(naive2)-1), rep(24, NCOL(test2)-1))
-names(ShapeP) <- levels(factor(longdataT$Sample))
-shapeScale <- scale_shape_manual(name =factor(longdataT$Sample),values = ShapeP)
-
-ShapeFill<-c(rep("white", NCOL(control2)-1), rep("#999999", NCOL(naive2)-1), rep("black", NCOL(test2)-1))
-names(ShapeFill) <- levels(factor(longdataT$Sample))
-fillScale <- scale_fill_manual(name =factor(longdataT$Sample),values = ShapeFill)
-### Load the plotting parameters------------------------------------------------------------------------------------------
-### Generate Scatterplot1 Map------------------------------------------------------------------------------------------
-scatter1<-ggplot(longdataT)+ 
-  theme_bw()+
-  geom_point(position = jitter, aes(x=reorder(x_label, +Order), y=Freq, color = Sample, shape=Sample,  fill = factor(Sample)), 
-             stroke=0.7, size=3)+
-  scale_y_log10(limits=c(1, 1e6), labels = trans_format("log10", math_format(10^.x)))+
-  colScale+
-  shapeScale+
-  fillScale+
-  labs(y="PPM", x="Glycan")+
-  ggtitle(campaignName)+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=7,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=7, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=7),
-        legend.text=element_text(family="Arial", color="black", size=7),
-        title=element_text(family="Arial", color="black", size=7))
-scatter1
-ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in",
-       filename = paste0(campaignName, "-scatter1.eps", sep=""))
-ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in", 
-       filename = paste0(campaignName, "-scatter1.jpg", sep=""))
+# jitter <- position_jitter(width = 0.2, height = 0.2)
+# 
+# ColorP<-c(rep("black", NCOL(control2)-1), rep("#999999", NCOL(naive2)-1), rep("black", NCOL(test2)-1))
+# names(ColorP) <- levels(factor(longdataT$Sample))
+# colScale <- scale_colour_manual(name =factor(longdataT$Sample),values = ColorP)
+# 
+# ShapeP<- c(rep(25, NCOL(control2)-1), rep(21, NCOL(naive2)-1), rep(24, NCOL(test2)-1))
+# names(ShapeP) <- levels(factor(longdataT$Sample))
+# shapeScale <- scale_shape_manual(name =factor(longdataT$Sample),values = ShapeP)
+# 
+# ShapeFill<-c(rep("white", NCOL(control2)-1), rep("#999999", NCOL(naive2)-1), rep("black", NCOL(test2)-1))
+# names(ShapeFill) <- levels(factor(longdataT$Sample))
+# fillScale <- scale_fill_manual(name =factor(longdataT$Sample),values = ShapeFill)
+# ### Load the plotting parameters------------------------------------------------------------------------------------------
+# ### Generate Scatterplot1 Map------------------------------------------------------------------------------------------
+# scatter1<-ggplot(longdataT)+ 
+#   theme_bw()+
+#   geom_point(position = jitter, aes(x=reorder(x_label, +Order), y=Freq, color = Sample, shape=Sample,  fill = factor(Sample)), 
+#              stroke=0.7, size=3)+
+#   scale_y_log10(limits=c(1, 1e6), labels = trans_format("log10", math_format(10^.x)))+
+#   colScale+
+#   shapeScale+
+#   fillScale+
+#   labs(y="PPM", x="Glycan")+
+#   ggtitle(campaignName)+
+#   theme(axis.text.x=element_text(family="Helvetica", color="black", angle=90, size=7,hjust=1,vjust=0.2),
+#         axis.text.y=element_text(family="Helvetica", color="black",size=7, face="bold"),
+#         legend.title=element_text(family="Helvetica", color="black",size=7),
+#         legend.text=element_text(family="Helvetica", color="black", size=7),
+#         title=element_text(family="Helvetica", color="black", size=7))
+# scatter1
+# ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in",
+#        filename = paste0(campaignName, "-scatter1.eps", sep=""))
+# ggsave(plot = scatter1, width = 17.71, height = 5.2, dpi = 300, units="in", 
+#        filename = paste0(campaignName, "-scatter1.jpg", sep=""))
 ### Generate Heat Map------------------------------------------------------------------------------------------
 jet.colors <- colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan", "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
 hm<-ggplot(longdataT, aes(x=reorder(x_label, +Order), y=fct_rev(factor(Sample)))) + 
@@ -189,11 +188,11 @@ hm<-ggplot(longdataT, aes(x=reorder(x_label, +Order), y=fct_rev(factor(Sample)))
   scale_fill_gradientn(colours = jet.colors(7))+
   ggtitle(campaignName)+
   labs(y="PPM", x="Glycan")+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=12),
-        legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))+
+  theme(axis.text.x=element_text(family="Helvetica", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Helvetica", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Helvetica", color="black",size=12),
+        legend.text=element_text(family="Helvetica", color="black", size=12),
+        title=element_text(family="Helvetica", color="black", size=12))+
   coord_equal()
 hm
 ggsave(plot = hm, width = 17.71, height = 5.2, dpi = 300, units="in", 
@@ -248,11 +247,11 @@ scatter2<-ggplot(data=dataEN)+
   labs(y="Enrichment", x="Glycan")+
   ggtitle(campaignName)+
   scale_fill_manual(values=c("#97CAD8","#DC1452"))+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=12),
-        legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))
+  theme(axis.text.x=element_text(family="Helvetica", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Helvetica", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Helvetica", color="black",size=12),
+        legend.text=element_text(family="Helvetica", color="black", size=12),
+        title=element_text(family="Helvetica", color="black", size=12))
 scatter2
 ggsave(plot = scatter2, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-scatter2.eps", sep=""))
@@ -284,26 +283,36 @@ if (x_axis==1) {
   dataTotal$x_label<-dataTotal$CommonName2
 }
 
+root <- function(x) x ^ (1/2)
+nonroot <- function(x) x ^ 2
+trans <- trans_new(name = "root",
+                        transform = root,
+                        inverse = nonroot)
+
+
+
 barchart<-ggplot(dataTotal, aes(x=reorder(x_label, +Order), y=totalEN))+
   theme_classic()+
   geom_bar(stat="identity", color="black", fill="black", 
            position=position_dodge()) +
-  geom_errorbar(aes(ymin=totalEN, ymax=totalEN+totalStd), width=.2,
+  geom_errorbar(aes(ymin=totalEN, ymax=totalEN+totalStd), width=.5, size=.4,
                 position=position_dodge(.9))+
   labs(y="Enrichment", x="Glycan")+
   ggtitle(campaignName)+
   expand_limits(x = 0, y = 0)+
-  theme(axis.text.x=element_text(family="Arial", color="black", angle=90, size=12,hjust=1,vjust=0.2),
-        axis.text.y=element_text(family="Arial", color="black",size=12, face="bold"),
-        legend.title=element_text(family="Arial", color="black",size=12),
-        legend.text=element_text(family="Arial", color="black", size=12),
-        title=element_text(family="Arial", color="black", size=12))+
+  theme(axis.text.x=element_text(family="Helvetica", color="black", angle=90, size=12,hjust=1,vjust=0.2),
+        axis.text.y=element_text(family="Helvetica", color="black",size=12, face="bold"),
+        legend.title=element_text(family="Helvetica", color="black",size=12),
+        legend.text=element_text(family="Helvetica", color="black", size=12),
+        title=element_text(family="Helvetica", color="black", size=12))+
   theme( # remove the vertical grid lines
     panel.grid.major.x = element_blank() ,
     # explicitly set the horizontal lines (or they will disappear too)
     panel.grid.major.y = element_line( size=.1, color="black" ),
     panel.grid.minor.y = element_blank()
-  )
+  )+
+  scale_y_continuous(trans=trans)+
+  geom_hline(yintercept = c(1,5,20))
 barchart
 ggsave(plot = barchart, width = 17.71, height = 5.2, dpi = 300, units="in", 
        filename = paste0(campaignName, "-barchart.eps", sep=""))
